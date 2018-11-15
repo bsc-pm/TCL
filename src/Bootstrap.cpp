@@ -7,16 +7,22 @@
 #include <checkpoint_lib.h>
 #include "Checkpoint.hpp"
 
-void checkpointing_library_init(MPI_Comm comm);
-
-void checkpointing_library_shutdown();
-
-void checkpointing_library_init(MPI_Comm comm)
+void checkpoint_library_init(MPI_Comm comm)
 {
     Checkpoint::initialize(comm);
 }
 
-void checkpointing_library_shutdown()
+void checkpoint_library_shutdown()
 {
     Checkpoint::shutdown();
+}
+
+void checkpoint_library_load(checkpoint_info_t * checkpointInfo) 
+{
+    Checkpoint::load((void *)checkpointInfo);
+}
+
+void checkpoint_library_store(checkpoint_info_t * checkpointInfo) 
+{
+    Checkpoint::store((void *)checkpointInfo);
 }

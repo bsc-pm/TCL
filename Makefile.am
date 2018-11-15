@@ -46,10 +46,6 @@ api_includes=\
 common_sources=\
     src/Bootstrap.cpp \
     src/Checkpoint.cpp \
-    src/FTICheckpoint.hpp \
-    src/FTICheckpoint.cpp \
-    src/SCRCheckpoint.hpp \
-    src/SCRCheckpoint.cpp \
 	$(END)
 
 fti_sources = \

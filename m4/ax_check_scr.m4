@@ -96,6 +96,14 @@ Please, provide a MPI library.
                 [scr=no])
   ])dnl
 
+  # If one of the previous tests were not satisfied, exit with an error message.
+  AS_IF([test x$scr != xyes],[
+      AC_MSG_ERROR([
+------------------------------
+SCR path was not correctly specified. 
+Please, check that provided directories are correct.
+------------------------------])
+  ])dnl
   
   scrlibs="$LIBS"
 

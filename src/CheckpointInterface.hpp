@@ -14,7 +14,8 @@ class CheckpointInterface {
         std::string _name_proc;
 
     public:
-        virtual ~CheckpointInterface();
+        virtual ~CheckpointInterface() 
+        {}
 
         virtual void store(CheckpointInfo * checkpointInfo) = 0;
         virtual void load(CheckpointInfo * checkpointInfo) = 0;

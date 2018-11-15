@@ -16,8 +16,8 @@ class Checkpoint {
 public:
     static void initialize(MPI_Comm comm);
     static void shutdown();
-    static void load(CheckpointInfo * checkpointInfo);
-    static void store(CheckpointInfo * checkpointInfo);
+    static void load(void * checkpointInfo);
+    static void store(void * checkpointInfo);
 };
 
 #endif

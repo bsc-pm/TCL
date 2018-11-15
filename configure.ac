@@ -67,11 +67,14 @@ AX_CONFIG_CC
 # MPI
 AX_CHECK_MPI
 
-# Check for FTI library (resilience)
+# Check for FTI library
 AX_CHECK_FTI
 
-# Check for SCR library (resilience)
+# Check for SCR library
 AX_CHECK_SCR
+
+# Check either FTI or SCR is enabled
+AX_CHECK_FTI_OR_SCR_ENABLED
 
 # Build versions
 AX_BUILD_VERSIONS

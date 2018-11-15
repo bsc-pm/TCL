@@ -88,7 +88,10 @@ AS_IF([test x$mpi_path_provided = xyes],[
     [mpibin=$with_mpi/bin64],
     [mpibin=$with_mpi/bin])dnl
 
-  mpiinc="-I$with_mpi/include"
+  AS_IF([test -d $with_mpi/include64],
+    [mpiinc="-I$with_mpi/include64"],
+    [mpiinc="-I$with_mpi/include"])dnl
+
   AS_IF([test -d $with_mpi/lib64],
     [mpilib="-L$with_mpi/lib64 -Wl,-rpath,$with_mpi/lib64"],
     [mpilib="-L$with_mpi/lib -Wl,-rpath,$with_mpi/lib"])dnl
@@ -101,6 +104,15 @@ AS_IF([test $with_mpi_include],[
 AS_IF([test $with_mpi_lib],[
   mpilib="-L$with_mpi_lib -Wl,-rpath,$with_mpi_lib"
 ])dnl
+
+AS_IF([test x$mpi != xyes ], [
+    AC_MSG_FAILURE([
+------------------------------
+MPI support required.
+Please, provide a MPI library.
+------------------------------])
+])
+    
 
 AS_IF([test $mpi = yes],[
   # 1) Save the previous value of autoconf generated variables.
@@ -143,7 +155,8 @@ AS_IF([test $mpi = yes],[
   AC_LANG_PUSH([C++])
   
   # Check for a valid MPI compiler
-  AC_PROG_CXX([$MPICXX $mpibin/mpiicpc $mpibin/mpicxx $mpibin/mpic++ mpiicpc mpicxx mpic++])
+  #AC_PROG_CXX([$MPICXX $mpibin/mpiicpc $mpibin/mpicxx $mpibin/mpic++ mpiicpc mpicxx mpic++])
+  AC_PROG_CXX([$CXX])
   AC_PROG_CXXCPP()
 
   # Check if mpi.h and mpicxx.h header files exists and compiles
@@ -173,7 +186,7 @@ AS_IF([test $mpi = yes],[
   # Look for MPI::Comm::Comm() function in libmpicxx, libmpi_cxx or libmpichcxx libraries
   AS_IF([test x$mpi == xyes],[
     AC_SEARCH_LIBS([_ZN3MPI4Comm10DisconnectEv],
-                   [mpichcxx mpi_cxx],
+                   [mpicxx mpichcxx mpi_cxx],
                    [mpi=yes;break],
                    [mpi=no])dnl
   ])dnl
@@ -302,6 +315,7 @@ Maximun multithread level supported: $ac_cv_mpi_mt
   AX_VAR_POPVALUE([am_cv_CXX_dependencies_compiler_type])
   
   AC_LANG_POP([C++])
+
 
 ])dnl use mpi
 

@@ -22,7 +22,7 @@ SCRCheckpoint::SCRCheckpoint(int rank)
 
     int initialized = -1;
     MPI_Initialized(&initialized); 
-    assert(!initialized && "Trying to initialize SCR without MPI being initialized.");
+    assert(initialized && "Trying to initialize SCR without MPI being initialized.");
     int res = SCR_Init();
     if(res != SCR_SUCCESS)
         assert(0 && "Cannot initialize SCR."); 
@@ -50,7 +50,7 @@ SCRCheckpoint::SCRCheckpoint(int rank)
         int fd = open (path, O_RDWR | O_CREAT, S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IWGRP | S_IWOTH);
         if(fd < 0) 
             perror("ERROR: ");
-        assert(0 && "Cannot open checkpoint");
+        assert(fd >= 0 && "Cannot open checkpoint");
 
         int num_read = read(fd, &_initialId, sizeof(unsigned long));
         assert(close(fd) == 0 && "Error closing checkpoint file.");
@@ -135,6 +135,8 @@ void SCRCheckpoint::store(CheckpointInfo * checkpointInfo) {
 }
 
 void SCRCheckpoint::load(CheckpointInfo * checkpointInfo) {
+    if(!restore())
+        return;
     char name[256];
     sprintf(name, "%s-%d.ckpt", _name_proc.c_str(), _rank);
     /* get backup file path */

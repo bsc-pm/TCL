@@ -63,7 +63,10 @@ AC_ARG_WITH(fti,
 #                       --without-fti, $with_fti value will be 'no'
 #                       --with-fti=somevalue, $with_fti value will be 'somevalue'
 AS_IF([test "$fti_path_provided" = yes],[
-  ftiinc="-I$with_fti/include"
+  AS_IF([test -d $with_fti/include64],
+    [ftiinc="-I$with_fti/include64"],
+    [ftiinc="-I$with_fti/include"])dnl
+
   AS_IF([test -d $with_fti/lib64],
     [ftilib="-L$with_fti/lib64 -Wl,-rpath,$with_fti/lib64"],
     [ftilib="-L$with_fti/lib -Wl,-rpath,$with_fti/lib"])dnl
@@ -75,14 +78,6 @@ AS_IF([test "$fti" = yes],[
   AX_VAR_PUSHVALUE([LDFLAGS],[$LDFLAGS $mpilib $ftilib])
   AX_VAR_PUSHVALUE([LIBS],[$mpilibs])
 
-  AS_IF([test x$mpi != xyes ], [
-    AC_MSG_FAILURE([
-------------------------------
-FTI requires MPI support.
-Please, provide a MPI library.
-------------------------------])
-  ])
-    
   # Check for header
   AC_CHECK_HEADERS([fti.h],
     [fti=yes],
@@ -96,6 +91,14 @@ Please, provide a MPI library.
                 [fti=no])
   ])dnl
 
+  # If one of the previous tests were not satisfied, exit with an error message.
+  AS_IF([test x$fti != xyes],[
+      AC_MSG_ERROR([
+------------------------------
+FTI path was not correctly specified. 
+Please, check that provided directories are correct.
+------------------------------])
+  ])dnl
   
   ftilibs="$LIBS"
 

@@ -22,7 +22,7 @@ FTICheckpoint::FTICheckpoint(int rank, MPI_Comm comm)
     // Note: FTI_Init expects a "char*"
     int initialized = -1;
     MPI_Initialized( &initialized ); 
-    assert(!initialized && "Trying to initialize FTI without MPI being initialized.");
+    assert(initialized && "Trying to initialize FTI without MPI being initialized.");
     res = FTI_Init(ftiConfig, comm); 
     if(res != FTI_SCES)
         assert(0 && "Cannot initialize FTI."); 
