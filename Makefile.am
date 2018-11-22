@@ -1,38 +1,49 @@
-#####################################################################################
-#      Copyright 2015 Barcelona Supercomputing Center                               #
-#                                                                                   #
-#      This file is part of the NANOS++ library.                                    #
-#                                                                                   #
-#      NANOS++ is free software: you can redistribute it and/or modify              #
-#      it under the terms of the GNU Lesser General Public License as published by  #
-#      the Free Software Foundation, either version 3 of the License, or            #
-#      (at your option) any later version.                                          #
-#                                                                                   #
-#      NANOS++ is distributed in the hope that it will be useful,                   #
-#      but WITHOUT ANY WARRANTY; without even the implied warranty of               #
-#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                #
-#      GNU Lesser General Public License for more details.                          #
-#                                                                                   #
-#      You should have received a copy of the GNU Lesser General Public License     #
-#      along with NANOS++.  If not, see <http://www.gnu.org/licenses/>.             #
-#####################################################################################
-
-EXTRA_DIST = ChangeLog
+#	This file is part of Transparent Checkpoint Lib (TCL) and is licensed under the terms contained in the COPYING file.
+#	
+#	Copyright (C) 2018-2019 Barcelona Supercomputing Center (BSC)
 
 ACLOCAL_AMFLAGS=-I m4
 
 
 END=
 
-checkpointlibincludedir = $(includedir)/checkpoint_lib
+tclincludedir = $(includedir)/tcl
 
-checkpointlibinclude_HEADERS = \
-	api/checkpoint_lib/bootstrap.h \
+tclinclude_HEADERS = \
+	api/tcl/bootstrap.h \
 	$(END)
 
 include_HEADERS = \
-	api/checkpoint_lib.h \
+	api/tcl.h \
 	$(END)
+
+nodist_tclinclude_HEADERS = \
+	tcl/multidimensional-register.h 
+
+noinst_HEADERS = \
+	src/Checkpoint.hpp \
+	src/CheckpointInfo.hpp \
+	src/CheckpointInterface.hpp \
+	src/FTICheckpoint.hpp \
+	src/MultidimensionalRegister.hpp \
+	src/MultidimensionalRegisterTraversal.hpp \
+	src/RegisterCPInfo.hpp \
+	src/SCRCheckpoint.hpp
+
+tcl_generated_headers = \
+	tcl/multidimensional-register.h 
+
+CLEANFILES = $(tcl_generated_headers)
+
+BUILT_SOURCES = \
+	$(tcl_generated_headers)
+#
+# Automatically generated API headers
+#
+EXTRA_DIST = \
+	scripts/common.sh \
+	scripts/generate_multidim_functions.sh \
+	scripts/generate_multidimensional_register_prototypes.sh
 
 common_includes=\
  -I$(top_builddir)\
@@ -43,9 +54,13 @@ api_includes=\
  -I$(top_srcdir)/api/\
  $(END)
 
+nodist_common_sources = \
+	$(tcl_generated_headers)
+
 common_sources=\
     src/Bootstrap.cpp \
     src/Checkpoint.cpp \
+    src/RegisterCPInfo.cpp \
 	$(END)
 
 fti_sources = \
@@ -57,6 +72,25 @@ scr_sources = \
     src/SCRCheckpoint.hpp \
     src/SCRCheckpoint.cpp \
     $(END)
+
+MAX_REGION_DIMENSIONS = 8
+AM_V_GEN = $(am__v_GEN_@AM_V@)
+
+tcl/multidimensional-register.h: $(top_srcdir)/scripts/common.sh $(top_srcdir)/scripts/generate_multidimensional_register_prototypes.sh
+	$(AM_V_GEN)mkdir -p tcl ; \
+	$(top_srcdir)/scripts/generate_multidimensional_register_prototypes.sh $(MAX_REGION_DIMENSIONS) > $@
+
+MultidimensionalRegister.cpp: $(top_srcdir)/scripts/common.sh $(top_srcdir)/scripts/generate_multidim_functions.sh
+	$(AM_V_GEN)$(top_srcdir)/scripts/generate_multidim_functions.sh $(MAX_REGION_DIMENSIONS) > $@
+
+multidimensional_sources = MultidimensionalRegister.cpp
+
+nodist_common_sources += \
+	$(multidimensional_sources)
+BUILT_SOURCES += \
+	$(multidimensional_sources)
+CLEANFILES += \
+	$(multidimensional_sources)
 
 AM_CPPFLAGS=@cc_dep_CPPFLAGS@ @mpiinc@ @ftiinc@ @scrinc@ $(common_includes) $(api_includes) -DLIBDIR='$(libdir)'
 AM_CXXFLAGS=@cc_dep_CXXFLAGS@
@@ -74,60 +108,62 @@ performance_LTLIBRARIES=
 noinst_LTLIBRARIES=
 
 if is_debug_enabled
-debug_LTLIBRARIES+=debug/libcheckpoint.la
+debug_LTLIBRARIES+=debug/libtcl.la
 
 if FTI_SUPPORT
-noinst_LTLIBRARIES+= debug/libcheckpointfti.la
-debug_libcheckpointfti_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS) @mpiinc@ @ftiinc@
-debug_libcheckpointfti_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
-debug_libcheckpointfti_la_LDFLAGS=$(AM_LDFLAGS) @ftilib@ 
-debug_libcheckpointfti_la_LIBADD=@ftilibs@
-debug_libcheckpointfti_la_SOURCES=$(fti_sources)
+noinst_LTLIBRARIES+= debug/libtclfti.la
+debug_libtclfti_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS) @mpiinc@ @ftiinc@
+debug_libtclfti_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
+debug_libtclfti_la_LDFLAGS=$(AM_LDFLAGS) @ftilib@ 
+debug_libtclfti_la_LIBADD=@ftilibs@
+debug_libtclfti_la_SOURCES=$(fti_sources)
 endif
 
 if SCR_SUPPORT
-noinst_LTLIBRARIES+= debug/libcheckpointscr.la
-debug_libcheckpointscr_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS) @mpiinc@ @scrinc@
-debug_libcheckpointscr_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
-debug_libcheckpointscr_la_LDFLAGS=$(AM_LDFLAGS) @scrlib@ 
-debug_libcheckpointscr_la_LIBADD=@scrlibs@
-debug_libcheckpointscr_la_SOURCES=$(scr_sources)
+noinst_LTLIBRARIES+= debug/libtclscr.la
+debug_libtclscr_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS) @mpiinc@ @scrinc@
+debug_libtclscr_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
+debug_libtclscr_la_LDFLAGS=$(AM_LDFLAGS) @scrlib@ 
+debug_libtclscr_la_LIBADD=@scrlibs@
+debug_libtclscr_la_SOURCES=$(scr_sources)
 endif
 
-debug_libcheckpoint_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS)
-debug_libcheckpoint_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
-debug_libcheckpoint_la_LDFLAGS=$(AM_LDFLAGS) $(ignore_muldefs) -Wl,-rpath,$(libdir)/debug
-debug_libcheckpoint_la_LIBADD=$(common_libadd) debug/libcheckpointfti.la debug/libcheckpointscr.la
-debug_libcheckpoint_la_SOURCES=$(common_sources)
-debug_libcheckpoint_la_DEPENDENCIES=$(common_libadd) @nanos_config_libs_debug@ debug/libcheckpointfti.la debug/libcheckpointscr.la
+debug_libtcl_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS)
+debug_libtcl_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
+debug_libtcl_la_LDFLAGS=$(AM_LDFLAGS) $(ignore_muldefs) -Wl,-rpath,$(libdir)/debug
+debug_libtcl_la_LIBADD=$(common_libadd) debug/libtclfti.la debug/libtclscr.la
+debug_libtcl_la_SOURCES=$(common_sources)
+nodist_debug_libtcl_la_SOURCES=$(nodist_common_sources)
+debug_libtcl_la_DEPENDENCIES=$(common_libadd) @tcl_config_libs_debug@ debug/libtclfti.la debug/libtclscr.la
 endif
 
 if is_performance_enabled
-performance_LTLIBRARIES+=performance/libcheckpoint.la
+performance_LTLIBRARIES+=performance/libtcl.la
 
 if FTI_SUPPORT
-noinst_LTLIBRARIES+= performance/libcheckpointfti.la
-performance_libcheckpointfti_la_CPPFLAGS=$(common_includes) $(common_performance_CPPFLAGS) @mpiinc@ @ftiinc@
-performance_libcheckpointfti_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
-performance_libcheckpointfti_la_LDFLAGS=$(AM_LDFLAGS) @ftilib@ 
-performance_libcheckpointfti_la_LIBADD=@ftilibs@
-performance_libcheckpointfti_la_SOURCES=$(fti_sources)
+noinst_LTLIBRARIES+= performance/libtclfti.la
+performance_libtclfti_la_CPPFLAGS=$(common_includes) $(common_performance_CPPFLAGS) @mpiinc@ @ftiinc@
+performance_libtclfti_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
+performance_libtclfti_la_LDFLAGS=$(AM_LDFLAGS) @ftilib@ 
+performance_libtclfti_la_LIBADD=@ftilibs@
+performance_libtclfti_la_SOURCES=$(fti_sources)
 endif
 
 if SCR_SUPPORT
-noinst_LTLIBRARIES+= performance/libcheckpointscr.la
-performance_libcheckpointscr_la_CPPFLAGS=$(common_includes) $(common__CPPFLAGS) @mpiinc@ @scrinc@
-performance_libcheckpointscr_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
-performance_libcheckpointscr_la_LDFLAGS=$(AM_LDFLAGS) @scrlib@ 
-performance_libcheckpointscr_la_LIBADD=@scrlibs@
-performance_libcheckpointscr_la_SOURCES=$(scr_sources)
+noinst_LTLIBRARIES+= performance/libtclscr.la
+performance_libtclscr_la_CPPFLAGS=$(common_includes) $(common__CPPFLAGS) @mpiinc@ @scrinc@
+performance_libtclscr_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
+performance_libtclscr_la_LDFLAGS=$(AM_LDFLAGS) @scrlib@ 
+performance_libtclscr_la_LIBADD=@scrlibs@
+performance_libtclscr_la_SOURCES=$(scr_sources)
 endif
 
-performance_libcheckpoint_la_CPPFLAGS=$(common_includes) $(common_performance_CPPFLAGS)
-performance_libcheckpoint_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
-performance_libcheckpoint_la_LDFLAGS=$(AM_LDFLAGS) $(ignore_muldefs) -Wl,-rpath,$(libdir)/performance
-performance_libcheckpoint_la_LIBADD=$(common_libadd) @nanos_config_libs_performance@ performance/libcheckpointfti.la performance/libcheckpointscr.la
-performance_libcheckpoint_la_SOURCES=$(common_sources)
-performance_libcheckpoint_la_DEPENDENCIES=$(common_libadd) @nanos_config_libs_performance@ performance/libcheckpointfti.la performance/libcheckpointscr.la
+performance_libtcl_la_CPPFLAGS=$(common_includes) $(common_performance_CPPFLAGS)
+performance_libtcl_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
+performance_libtcl_la_LDFLAGS=$(AM_LDFLAGS) $(ignore_muldefs) -Wl,-rpath,$(libdir)/performance
+performance_libtcl_la_LIBADD=$(common_libadd) @tcl_config_libs_performance@ performance/libtclfti.la performance/libtclscr.la
+performance_libtcl_la_SOURCES=$(common_sources)
+nodist_performance_libtcl_la_SOURCES=$(nodist_common_sources)
+performance_libtcl_la_DEPENDENCIES=$(common_libadd) @tcl_config_libs_performance@ performance/libtclfti.la performance/libtclscr.la
 endif
 

@@ -81,7 +81,7 @@ AC_DEFUN([_ax_enable_version],[
   AS_VAR_PUSHDEF([version_enabled],[is_$1_enabled])
   AS_VAR_PUSHDEF([cppflags],[$1_CPPFLAGS])
   AS_VAR_PUSHDEF([cxxflags],[$1_CXXFLAGS])
-  AS_VAR_PUSHDEF([config_libs],[nanos_config_libs_$1])
+  AS_VAR_PUSHDEF([config_libs],[tcl_config_libs_$1])
 
   # Versiondir (e.g. performancedir) is used by libtool
   # to place ltlibraries

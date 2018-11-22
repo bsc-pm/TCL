@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cassert>
+#include <vector>
 
 struct CheckpointElement {
     void * _baseAddress;
@@ -33,22 +34,28 @@ struct CheckpointElement {
 struct CheckpointInfo {
     typedef void (*err_handler)(int err_code);
     size_t _numElements;
-    CheckpointElement *_elements;
+    //CheckpointElement *_elements;
+    std::vector<CheckpointElement> _elements;
     int _level; 
     size_t _id;
     bool _mandatory;
-    err_handler error_handler;
+    err_handler _error_handler;
 
-    CheckpointInfo(size_t numElements, CheckpointElement * elements, void (*handler)(int)) 
-        : _numElements(numElements), _elements(elements)
+    CheckpointInfo()
+        //: _numElements(0), _elements(nullptr), _level(0), _id(0), _mandatory(false), _error_handler(nullptr)
+        : _numElements(0), _level(0), _id(0), _mandatory(false), _error_handler(nullptr)
     {
-        error_handler = handler;
     }
 
-    CheckpointInfo(size_t numElements, CheckpointElement * elements, int level, size_t id, bool mandatory, void (*handler)(int)) 
-        : _numElements(numElements), _elements(elements), _level(level), _id(id), _mandatory(mandatory)
+    inline void reset()
     {
-        error_handler = handler;
+        _numElements = 0;
+        //_elements = nullptr;
+        _elements.clear();
+        _level = 0;
+        _id = 0;
+        _mandatory = false;
+        _error_handler = nullptr;
     }
 
     inline size_t getNumElements()
@@ -56,7 +63,8 @@ struct CheckpointInfo {
         return _numElements;
     }
 
-    inline CheckpointElement * getElements()
+    //inline CheckpointElement * getElements()
+    inline std::vector<CheckpointElement> getElements()
     {
         return _elements;
     }
@@ -78,7 +86,7 @@ struct CheckpointInfo {
 
     err_handler getErrorHandler() 
     {
-        return error_handler;
+        return _error_handler;
     }
 };
 

@@ -4,25 +4,35 @@
 	Copyright (C) 2018-2019 Barcelona Supercomputing Center (BSC)
 */
 
-#include <checkpoint_lib.h>
+#include <tcl.h>
 #include "Checkpoint.hpp"
 
-void checkpoint_library_init(MPI_Comm comm)
+void tcl_init(MPI_Comm comm)
 {
     Checkpoint::initialize(comm);
 }
 
-void checkpoint_library_shutdown()
+void tcl_shutdown()
 {
     Checkpoint::shutdown();
 }
 
-void checkpoint_library_load(checkpoint_info_t * checkpointInfo) 
+void tcl_begin_load(void (*error_handler)(int))
 {
-    Checkpoint::load((void *)checkpointInfo);
+    Checkpoint::beginLoad(error_handler);
 }
 
-void checkpoint_library_store(checkpoint_info_t * checkpointInfo) 
+void tcl_end_load() 
 {
-    Checkpoint::store((void *)checkpointInfo);
+    Checkpoint::endLoad();
+}
+
+void tcl_begin_store(int level, size_t id, bool mandatory, void (*error_handler)(int))
+{
+    Checkpoint::beginStore(level, id, mandatory, error_handler);
+}
+
+void tcl_end_store()
+{
+    Checkpoint::endStore();
 }

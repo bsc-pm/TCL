@@ -10,7 +10,7 @@
 #
 #   Check whether MPI architecture has been enabled or not.
 #   We do not include header/library checks in this macro because
-#   we do not want Nanos++ to be bound to a specific MPI implementation.
+#   we do not want TCL to be bound to a specific MPI implementation.
 #   MPI dependent plugin source code will be compiled in the user program
 #   build stage.
 #

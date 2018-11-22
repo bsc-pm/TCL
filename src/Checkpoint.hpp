@@ -13,11 +13,16 @@
 
 class Checkpoint {
     static CheckpointInterface *_checkpoint;
+    static CheckpointInfo _currentCheckpointInfo;
+    static bool _operationInProcess;
 public:
     static void initialize(MPI_Comm comm);
     static void shutdown();
-    static void load(void * checkpointInfo);
-    static void store(void * checkpointInfo);
+    static void beginLoad(void (*error_handler)(int));
+    static void endLoad();
+    static void beginStore(int level, size_t id, bool mandatory, void (*error_handler)(int));
+    static void endStore();
+    static void registerCPInfoElem(void *baseAddress, size_t size);
 };
 
 #endif
