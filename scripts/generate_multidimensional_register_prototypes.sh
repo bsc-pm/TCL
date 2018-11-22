@@ -43,6 +43,12 @@ echo "extern \"C\" {"
 echo "#endif"
 echo
 echo
+echo "typedef enum {"
+echo -e "\t\t__tcl_max_dimensions = 8"
+echo "} __tcl_api_constants_t;"
+echo
+echo
+
 
 for dimensions in $(seq 1 ${maxdimensions}) ; do
 	generate_register_full_prototype ${dimensions} ${type}
