@@ -44,7 +44,7 @@ echo "#endif"
 echo
 echo
 echo "typedef enum {"
-echo -e "\t\t__tcl_max_dimensions = 8"
+echo "\t\t__tcl_max_dimensions = 8"
 echo "} __tcl_api_constants_t;"
 echo
 echo
