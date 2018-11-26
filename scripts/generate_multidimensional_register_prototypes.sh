@@ -44,7 +44,7 @@ echo "#endif"
 echo
 echo
 echo "enum {"
-echo "\t\t__tcl_max_dimensions = 8"
+echo "      __tcl_max_dimensions = 8"
 echo "};"
 echo
 echo
