@@ -18,11 +18,11 @@ extern "C" {
 #endif
 
 void tcl_init(MPI_Comm comm);
-void tcl_shutdown();
+void tcl_shutdown(void);
 void tcl_begin_load(void (*error_handler)(int));
-void tcl_end_load();
+void tcl_end_load(void);
 void tcl_begin_store(int level, size_t id, bool mandatory, void (*error_handler)(int));
-void tcl_end_store();
+void tcl_end_store(void);
 
 #ifdef __cplusplus
 }
