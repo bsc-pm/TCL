@@ -1,4 +1,4 @@
-AC_INIT([cplib], [0.10a], [mmaronas@bsc.es])
+AC_INIT([tcl], [0.10a], [mmaronas@bsc.es])
 AC_LANG([C++])
 AC_CONFIG_SRCDIR([src/Checkpoint.cpp])
 AC_DEFINE_UNQUOTED([NANOX_CONFIGURE_ARGS], ["$0 $@"], [Configure line])

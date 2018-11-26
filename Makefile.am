@@ -109,61 +109,77 @@ noinst_LTLIBRARIES=
 
 if is_debug_enabled
 debug_LTLIBRARIES+=debug/libtcl.la
+debug_libtcl_la_LIBADD=$(common_libadd)
+debug_libtcl_la_DEPENDENCIES=$(common_libadd) @tcl_config_libs_debug@
 
 if FTI_SUPPORT
+common_debug_CPPFLAGS+=-DFTI_BACKEND
+common_debug_CXXFLAGS+=-DFTI_BACKEND
 noinst_LTLIBRARIES+= debug/libtclfti.la
 debug_libtclfti_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS) @mpiinc@ @ftiinc@
 debug_libtclfti_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
 debug_libtclfti_la_LDFLAGS=$(AM_LDFLAGS) @ftilib@ 
 debug_libtclfti_la_LIBADD=@ftilibs@
 debug_libtclfti_la_SOURCES=$(fti_sources)
+debug_libtcl_la_LIBADD+=debug/libtclfti.la
+debug_libtcl_la_DEPENDENCIES+=debug/libtclfti.la
 endif
 
 if SCR_SUPPORT
+common_debug_CPPFLAGS+=-DSCR_BACKEND
+common_debug_CXXFLAGS+=-DSCR_BACKEND
 noinst_LTLIBRARIES+= debug/libtclscr.la
 debug_libtclscr_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS) @mpiinc@ @scrinc@
 debug_libtclscr_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
 debug_libtclscr_la_LDFLAGS=$(AM_LDFLAGS) @scrlib@ 
 debug_libtclscr_la_LIBADD=@scrlibs@
 debug_libtclscr_la_SOURCES=$(scr_sources)
+debug_libtcl_la_LIBADD+=debug/libtclscr.la
+debug_libtcl_la_DEPENDENCIES+=debug/libtclscr.la
 endif
 
 debug_libtcl_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS)
 debug_libtcl_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
 debug_libtcl_la_LDFLAGS=$(AM_LDFLAGS) $(ignore_muldefs) -Wl,-rpath,$(libdir)/debug
-debug_libtcl_la_LIBADD=$(common_libadd) debug/libtclfti.la debug/libtclscr.la
 debug_libtcl_la_SOURCES=$(common_sources)
 nodist_debug_libtcl_la_SOURCES=$(nodist_common_sources)
-debug_libtcl_la_DEPENDENCIES=$(common_libadd) @tcl_config_libs_debug@ debug/libtclfti.la debug/libtclscr.la
 endif
 
 if is_performance_enabled
 performance_LTLIBRARIES+=performance/libtcl.la
+performance_libtcl_la_LIBADD=$(common_libadd) @tcl_config_libs_performance@
+performance_libtcl_la_DEPENDENCIES=$(common_libadd) @tcl_config_libs_performance@
 
 if FTI_SUPPORT
+common_performance_CPPFLAGS+=-DFTI_BACKEND
+common_performance_CXXFLAGS+=-DFTI_BACKEND
 noinst_LTLIBRARIES+= performance/libtclfti.la
 performance_libtclfti_la_CPPFLAGS=$(common_includes) $(common_performance_CPPFLAGS) @mpiinc@ @ftiinc@
 performance_libtclfti_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
 performance_libtclfti_la_LDFLAGS=$(AM_LDFLAGS) @ftilib@ 
 performance_libtclfti_la_LIBADD=@ftilibs@
 performance_libtclfti_la_SOURCES=$(fti_sources)
+performance_libtcl_la_LIBADD+=performance/libtclfti.la
+performance_libtcl_la_DEPENDENCIES+=performance/libtclfti.la
 endif
 
 if SCR_SUPPORT
+common_performance_CPPFLAGS+=-DSCR_BACKEND
+common_performance_CXXFLAGS+=-DSCR_BACKEND
 noinst_LTLIBRARIES+= performance/libtclscr.la
 performance_libtclscr_la_CPPFLAGS=$(common_includes) $(common__CPPFLAGS) @mpiinc@ @scrinc@
 performance_libtclscr_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
 performance_libtclscr_la_LDFLAGS=$(AM_LDFLAGS) @scrlib@ 
 performance_libtclscr_la_LIBADD=@scrlibs@
 performance_libtclscr_la_SOURCES=$(scr_sources)
+performance_libtcl_la_LIBADD+=performance/libtclscr.la
+performance_libtcl_la_DEPENDENCIES+=performance/libtclscr.la
 endif
 
 performance_libtcl_la_CPPFLAGS=$(common_includes) $(common_performance_CPPFLAGS)
 performance_libtcl_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
 performance_libtcl_la_LDFLAGS=$(AM_LDFLAGS) $(ignore_muldefs) -Wl,-rpath,$(libdir)/performance
-performance_libtcl_la_LIBADD=$(common_libadd) @tcl_config_libs_performance@ performance/libtclfti.la performance/libtclscr.la
 performance_libtcl_la_SOURCES=$(common_sources)
 nodist_performance_libtcl_la_SOURCES=$(nodist_common_sources)
-performance_libtcl_la_DEPENDENCIES=$(common_libadd) @tcl_config_libs_performance@ performance/libtclfti.la performance/libtclscr.la
 endif
 

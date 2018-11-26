@@ -5,10 +5,16 @@
 */
 
 #include "Checkpoint.hpp"
-#include "FTICheckpoint.hpp"
-#include "SCRCheckpoint.hpp"
 #include <cstring>
 #include <cstdlib>
+
+#ifdef FTI_BACKEND
+#include "FTICheckpoint.hpp"
+#endif
+
+#ifdef SCR_BACKEND
+#include "SCRCheckpoint.hpp"
+#endif
 
 CheckpointInterface * Checkpoint::_checkpoint;
 CheckpointInfo Checkpoint::_currentCheckpointInfo;
@@ -21,12 +27,23 @@ void Checkpoint::initialize(MPI_Comm comm)
     int rank;
     int res = MPI_Comm_rank(comm, &rank);
     assert(res == MPI_SUCCESS && "Cannot retrieve MPI rank.");
+
     if(strcmp(backend_str, "FTI") == 0 || strcmp(backend_str, "fti") == 0)
+#ifdef FTI_BACKEND
         _checkpoint = (CheckpointInterface *) new FTICheckpoint(rank, comm);
+#else
+        assert(0 && "Trying to use FTI as backend but FTI is not configured.");
+#endif
     else if (strcmp(backend_str, "SCR") == 0 || strcmp(backend_str, "scr") == 0)
+#ifdef SCR_BACKEND
         _checkpoint = new SCRCheckpoint(rank);
+#else
+        assert(0 && "Trying to use SCR as backend but SCR is not configured.");
+#endif
     else
-        assert("TCL_BACKEND must be either FTI or SCR.");
+        assert(0 && "TCL_BACKEND must be either FTI or SCR.");
+
+
     _operationInProcess = false;
 }
 
