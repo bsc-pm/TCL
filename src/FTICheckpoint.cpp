@@ -37,7 +37,6 @@ FTICheckpoint::~FTICheckpoint() {
 
 void FTICheckpoint::store(CheckpointInfo * checkpointInfo) {
     int res;
-    //CheckpointElement * elements = checkpointInfo->getElements();
     std::vector<CheckpointElement> elements = checkpointInfo->getElements();
     for(unsigned int i = 0; i < checkpointInfo->getNumElements(); i++) {
         size_t copy_size = elements[i].getSize();
@@ -70,8 +69,8 @@ void FTICheckpoint::store(CheckpointInfo * checkpointInfo) {
 void FTICheckpoint::load(CheckpointInfo * checkpointInfo) { 
     if(!restore())
         return;
+
     int res;
-    //CheckpointElement * elements = checkpointInfo->getElements();
     std::vector<CheckpointElement> elements = checkpointInfo->getElements();
     for(unsigned int i = 0; i < checkpointInfo->getNumElements(); i++) {
         size_t copy_size = elements[i].getSize();
@@ -85,10 +84,11 @@ void FTICheckpoint::load(CheckpointInfo * checkpointInfo) {
         res = FTI_Protect(i, copy_address, 1, ckptInfo); 
         if(res != FTI_SCES)
             (*checkpointInfo->_error_handler)(res);
-        res = FTI_Recover();
-        if(res != FTI_SCES)
-            (*checkpointInfo->_error_handler)(res);
     }
+
+    res = FTI_Recover();
+    if(res != FTI_SCES)
+        (*checkpointInfo->_error_handler)(res);
 }
 
 /********** FTI CHECKPOINT **********/

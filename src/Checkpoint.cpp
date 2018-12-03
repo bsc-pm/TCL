@@ -62,7 +62,8 @@ void Checkpoint::beginLoad(void (*error_handler)(int))
 void Checkpoint::endLoad()
 {
     assert(_operationInProcess);
-   _checkpoint->load(&_currentCheckpointInfo);
+    _checkpoint->load(&_currentCheckpointInfo);
+    _checkpoint->disableRestore();
     _currentCheckpointInfo.reset();
     _operationInProcess = false;
 }

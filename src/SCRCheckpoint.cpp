@@ -116,7 +116,6 @@ void SCRCheckpoint::store(CheckpointInfo * checkpointInfo) {
             saved_data = write(fd, &writeval, sizeof(unsigned long));
 
             /* Save data */
-            //CheckpointElement * elements = checkpointInfo->getElements();
             std::vector<CheckpointElement> elements = checkpointInfo->getElements();
             for(unsigned int i = 0; i < checkpointInfo->getNumElements(); i++) {
                 size_t copy_size = elements[i].getSize();
@@ -138,6 +137,7 @@ void SCRCheckpoint::store(CheckpointInfo * checkpointInfo) {
 void SCRCheckpoint::load(CheckpointInfo * checkpointInfo) {
     if(!restore())
         return;
+
     char name[256];
     sprintf(name, "%s-%d.ckpt", _name_proc.c_str(), _rank);
     /* get backup file path */
@@ -146,7 +146,6 @@ void SCRCheckpoint::load(CheckpointInfo * checkpointInfo) {
     int status = 0;
     void * tmp = NULL;
     size_t copies_size = sizeof(unsigned long);
-    //CheckpointElement * elements = checkpointInfo->getElements();
     std::vector<CheckpointElement> elements = checkpointInfo->getElements();
     for(unsigned int i = 0; i < checkpointInfo->getNumElements(); i++) {
         size_t copy_size = elements[i].getSize();
