@@ -17,11 +17,16 @@
 extern "C" {
 #endif
 
+typedef enum {
+    TCL_CHECKPOINT_FULL = (1 << 0),
+    TCL_CHECKPOINT_DIFF = (1 << 1),
+} tcl_checkpoint_kind_t;
+
 void tcl_init(MPI_Comm comm);
 void tcl_shutdown(void);
 void tcl_begin_load(void (*error_handler)(int));
 void tcl_end_load(void);
-void tcl_begin_store(int level, size_t id, bool mandatory, void (*error_handler)(int));
+void tcl_begin_store(int level, tcl_checkpoint_kind_t kind, size_t id, bool mandatory, void (*error_handler)(int));
 void tcl_end_store(void);
 
 #ifdef __cplusplus

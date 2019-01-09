@@ -27,8 +27,9 @@ void tcl_end_load()
     Checkpoint::endLoad();
 }
 
-void tcl_begin_store(int level, size_t id, bool mandatory, void (*error_handler)(int))
+void tcl_begin_store(int level, tcl_checkpoint_kind_t kind, size_t id, bool mandatory, void (*error_handler)(int))
 {
+    //FIXME: we should propagate the kind information!
     Checkpoint::beginStore(level, id, mandatory, error_handler);
 }
 
