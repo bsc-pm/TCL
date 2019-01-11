@@ -63,15 +63,17 @@ void Checkpoint::endLoad()
 {
     assert(_operationInProcess);
     _checkpoint->load(&_currentCheckpointInfo);
-    _checkpoint->disableRestore();
+    if(_checkpoint->restore())
+        _checkpoint->disableRestore();
     _currentCheckpointInfo.reset();
     _operationInProcess = false;
 }
 
-void Checkpoint::beginStore(int level, size_t id, bool mandatory, void (*error_handler)(int))
+void Checkpoint::beginStore(int level, CheckpointKind kind, size_t id, bool mandatory, void (*error_handler)(int))
 {
     _operationInProcess = true;
     _currentCheckpointInfo._level = level;
+    _currentCheckpointInfo._kind = kind;
     _currentCheckpointInfo._id = id;
     _currentCheckpointInfo._mandatory = mandatory;
     _currentCheckpointInfo._error_handler = error_handler;

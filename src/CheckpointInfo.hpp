@@ -11,6 +11,11 @@
 #include <cassert>
 #include <vector>
 
+typedef enum {
+    CHECKPOINT_FULL = (1 << 0),
+    CHECKPOINT_DIFF = (1 << 1),
+} CheckpointKind;
+
 struct CheckpointElement {
     void * _baseAddress;
     size_t _size;
@@ -37,13 +42,14 @@ struct CheckpointInfo {
     //CheckpointElement *_elements;
     std::vector<CheckpointElement> _elements;
     int _level; 
+    CheckpointKind _kind;
     size_t _id;
     bool _mandatory;
     err_handler _error_handler;
 
     CheckpointInfo()
         //: _numElements(0), _elements(nullptr), _level(0), _id(0), _mandatory(false), _error_handler(nullptr)
-        : _numElements(0), _level(0), _id(0), _mandatory(false), _error_handler(nullptr)
+        : _numElements(0), _level(0), _kind(CHECKPOINT_FULL), _id(0), _mandatory(false), _error_handler(nullptr)
     {
     }
 
@@ -53,6 +59,7 @@ struct CheckpointInfo {
         //_elements = nullptr;
         _elements.clear();
         _level = 0;
+        _kind = CHECKPOINT_FULL;
         _id = 0;
         _mandatory = false;
         _error_handler = nullptr;
@@ -72,6 +79,11 @@ struct CheckpointInfo {
     inline int getLevel()
     {
         return _level;
+    }
+
+    inline CheckpointKind getKind()
+    {
+        return _kind;
     }
 
     inline size_t getId()

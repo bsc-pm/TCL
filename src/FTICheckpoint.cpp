@@ -54,11 +54,13 @@ void FTICheckpoint::store(CheckpointInfo * checkpointInfo) {
 
     // if checkpoint clause has condition and condition is satisfied, we must do the checkpoint ignoring FTI/SCR advise.
     if(checkpointInfo->isMandatory()) {
-        res = FTI_Checkpoint(checkpointInfo->getId(), checkpointInfo->getLevel()); 
+        int level = checkpointInfo->getKind() == CHECKPOINT_DIFF ? checkpointInfo->getLevel() + 4 :  checkpointInfo->getLevel();
+        res = FTI_Checkpoint(checkpointInfo->getId(), level); 
         if(res != FTI_DONE)
             (*checkpointInfo->_error_handler)(res);
     }
     else{
+        assert(checkpointInfo->getKind() == CHECKPOINT_FULL);
         // if checkpoint clause is empty, we trust FTI/SCR to checkpoint when needed.
         res = FTI_Snapshot();
         if(res != FTI_SCES && res != FTI_DONE)

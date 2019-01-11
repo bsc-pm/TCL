@@ -20,7 +20,7 @@ public:
     static void shutdown();
     static void beginLoad(void (*error_handler)(int));
     static void endLoad();
-    static void beginStore(int level, size_t id, bool mandatory, void (*error_handler)(int));
+    static void beginStore(int level, CheckpointKind kind, size_t id, bool mandatory, void (*error_handler)(int));
     static void endStore();
     static void registerCPInfoElem(void *baseAddress, size_t size);
 };

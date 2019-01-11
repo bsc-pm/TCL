@@ -83,6 +83,7 @@ SCRCheckpoint::~SCRCheckpoint() {
 }
 
 void SCRCheckpoint::store(CheckpointInfo * checkpointInfo) {
+    assert(checkpointInfo->getKind() == CHECKPOINT_FULL && "DIFFERENTIAL CHECKPOINT IS NOT SUPPORTED BY SCR");
     unsigned int saved_data = 0;
     int perform_checkpoint = 0;
     int res;
