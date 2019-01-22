@@ -18,8 +18,9 @@ extern "C" {
 #endif
 
 typedef enum {
-    TCL_CHECKPOINT_FULL = (1 << 0),
-    TCL_CHECKPOINT_DIFF = (1 << 1),
+    TCL_CHECKPOINT_FULL = 0,
+    TCL_CHECKPOINT_DIFF = 1,
+    // 2, 4, 8, ...
 } tcl_checkpoint_kind_t;
 
 void tcl_init(MPI_Comm comm);
