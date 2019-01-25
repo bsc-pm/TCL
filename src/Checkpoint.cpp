@@ -16,6 +16,10 @@
 #include "SCRCheckpoint.hpp"
 #endif
 
+#ifdef VELOC_BACKEND
+#include "VELOCCheckpoint.hpp"
+#endif
+
 CheckpointInterface * Checkpoint::_checkpoint;
 CheckpointInfo Checkpoint::_currentCheckpointInfo;
 bool Checkpoint::_operationInProcess;
@@ -40,8 +44,14 @@ void Checkpoint::initialize(MPI_Comm comm)
 #else
         assert(0 && "Trying to use SCR as backend but SCR is not configured.");
 #endif
+    else if (strcmp(backend_str, "VELOC") == 0 || strcmp(backend_str, "veloc") == 0)
+#ifdef VELOC_BACKEND
+        _checkpoint = new VELOCCheckpoint(rank, comm);
+#else
+        assert(0 && "Trying to use VELOC as backend but VELOC is not configured.");
+#endif
     else
-        assert(0 && "TCL_BACKEND must be either FTI or SCR.");
+        assert(0 && "TCL_BACKEND must be either FTI, SCR or VELOC.");
 
 
     _operationInProcess = false;

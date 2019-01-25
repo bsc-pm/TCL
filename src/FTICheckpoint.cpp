@@ -12,7 +12,6 @@ FTICheckpoint::FTICheckpoint(int rank, MPI_Comm comm)
     _restore = false;
     _rank = rank;
     _name_proc = "";
-    _checkpoint_level = 1;
 
     int res;
     char * ftiConfig = std::getenv("FTI_CONF_FILE");

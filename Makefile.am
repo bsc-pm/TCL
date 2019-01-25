@@ -28,7 +28,8 @@ noinst_HEADERS = \
 	src/MultidimensionalRegister.hpp \
 	src/MultidimensionalRegisterTraversal.hpp \
 	src/RegisterCPInfo.hpp \
-	src/SCRCheckpoint.hpp
+	src/SCRCheckpoint.hpp \
+	src/VELOCCheckpoint.hpp
 
 tcl_generated_headers = \
 	tcl/multidimensional-register.h 
@@ -73,6 +74,11 @@ scr_sources = \
     src/SCRCheckpoint.cpp \
     $(END)
 
+veloc_sources = \
+    src/VELOCCheckpoint.hpp \
+    src/VELOCCheckpoint.cpp \
+    $(END)
+
 MAX_REGION_DIMENSIONS = 8
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 
@@ -92,10 +98,10 @@ BUILT_SOURCES += \
 CLEANFILES += \
 	$(multidimensional_sources)
 
-AM_CPPFLAGS=@cc_dep_CPPFLAGS@ @mpiinc@ @ftiinc@ @scrinc@ $(common_includes) $(api_includes) -DLIBDIR='$(libdir)'
+AM_CPPFLAGS=@cc_dep_CPPFLAGS@ @mpiinc@ @ftiinc@ @scrinc@ @velocinc@ $(common_includes) $(api_includes) -DLIBDIR='$(libdir)'
 AM_CXXFLAGS=@cc_dep_CXXFLAGS@
-AM_LDFLAGS=@mpilib@ @ftilib@ @scrlib@
-LIBS+=@mpilibs@ @ftilibs@ @scrlibs@
+AM_LDFLAGS=@mpilib@ @ftilib@ @scrlib@ @veloclib@
+LIBS+=@mpilibs@ @ftilibs@ @scrlibs@ @veloclibs@
 
 common_performance_CPPFLAGS= $(AM_CPPFLAGS) @performance_CPPFLAGS@
 common_debug_CPPFLAGS= $(AM_CPPFLAGS) @debug_CPPFLAGS@
@@ -138,6 +144,19 @@ debug_libtcl_la_LIBADD+=debug/libtclscr.la
 debug_libtcl_la_DEPENDENCIES+=debug/libtclscr.la
 endif
 
+if VELOC_SUPPORT
+common_debug_CPPFLAGS+=-DVELOC_BACKEND
+common_debug_CXXFLAGS+=-DVELOC_BACKEND
+noinst_LTLIBRARIES+= debug/libtclveloc.la
+debug_libtclveloc_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS) @mpiinc@ @velocinc@
+debug_libtclveloc_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
+debug_libtclveloc_la_LDFLAGS=$(AM_LDFLAGS) @veloclib@ 
+debug_libtclveloc_la_LIBADD=@veloclibs@
+debug_libtclveloc_la_SOURCES=$(veloc_sources)
+debug_libtcl_la_LIBADD+=debug/libtclveloc.la
+debug_libtcl_la_DEPENDENCIES+=debug/libtclveloc.la
+endif
+
 debug_libtcl_la_CPPFLAGS=$(common_includes) $(common_debug_CPPFLAGS)
 debug_libtcl_la_CXXFLAGS=$(common_includes) $(common_debug_CXXFLAGS)
 debug_libtcl_la_LDFLAGS=$(AM_LDFLAGS) $(ignore_muldefs) -Wl,-rpath,$(libdir)/debug
@@ -174,6 +193,19 @@ performance_libtclscr_la_LIBADD=@scrlibs@
 performance_libtclscr_la_SOURCES=$(scr_sources)
 performance_libtcl_la_LIBADD+=performance/libtclscr.la
 performance_libtcl_la_DEPENDENCIES+=performance/libtclscr.la
+endif
+
+if VELOC_SUPPORT
+common_performance_CPPFLAGS+=-DVELOC_BACKEND
+common_performance_CXXFLAGS+=-DVELOC_BACKEND
+noinst_LTLIBRARIES+= performance/libtclveloc.la
+performance_libtclveloc_la_CPPFLAGS=$(common_includes) $(common__CPPFLAGS) @mpiinc@ @velocinc@
+performance_libtclveloc_la_CXXFLAGS=$(common_includes) $(common_performance_CXXFLAGS)
+performance_libtclveloc_la_LDFLAGS=$(AM_LDFLAGS) @veloclib@ 
+performance_libtclveloc_la_LIBADD=@veloclibs@
+performance_libtclveloc_la_SOURCES=$(veloc_sources)
+performance_libtcl_la_LIBADD+=performance/libtclveloc.la
+performance_libtcl_la_DEPENDENCIES+=performance/libtclveloc.la
 endif
 
 performance_libtcl_la_CPPFLAGS=$(common_includes) $(common_performance_CPPFLAGS)

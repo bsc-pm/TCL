@@ -1,11 +1,11 @@
 #
 # SYNOPSIS
 #
-#   AX_CHECK_FTI_OR_SCR_ENABLED
+#   AX_CHECK_FTI_OR_SCR_OR_VELOC_ENABLED
 #
 # DESCRIPTION
 #
-#   Check whether a valid FTI library or a valid SCR library is available. 
+#   Check whether a valid FTI library or a valid SCR library or a valid VELOC library is available. 
 #
 # LICENSE
 #
@@ -37,15 +37,15 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-AC_DEFUN([AX_CHECK_FTI_OR_SCR_ENABLED],
+AC_DEFUN([AX_CHECK_FTI_OR_SCR_OR_VELOC_ENABLED],
 [
-  AS_IF([test x$fti != xyes && test x$scr != xyes ], [
+  AS_IF([test x$fti != xyes && test x$scr != xyes && testx$veloc != xyes ], [
     AC_MSG_FAILURE([
 ------------------------------
-Either FTI or SCR is required.
-Please, provide a FTI/SCR library.
+Either FTI or SCR or VELOC is required.
+Please, provide a FTI/SCR/VELOC library.
 ------------------------------])
   ])
 
-])dnl AX_CHECK_FTI_OR_SCR_ENABLED
+])dnl AX_CHECK_FTI_OR_SCR_VELOC_ENABLED
 

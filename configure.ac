@@ -73,8 +73,11 @@ AX_CHECK_FTI
 # Check for SCR library
 AX_CHECK_SCR
 
+# Check for VELOC library
+AX_CHECK_VELOC
+
 # Check either FTI or SCR is enabled
-AX_CHECK_FTI_OR_SCR_ENABLED
+AX_CHECK_FTI_OR_SCR_OR_VELOC_ENABLED
 
 # Build versions
 AX_BUILD_VERSIONS

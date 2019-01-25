@@ -12,8 +12,9 @@
 #include <vector>
 
 typedef enum {
-    CHECKPOINT_FULL = (1 << 0),
-    CHECKPOINT_DIFF = (1 << 1),
+    CHECKPOINT_FULL = 0,
+    CHECKPOINT_DIFF = 1,
+    // 2, 4, 8, ...
 } CheckpointKind;
 
 struct CheckpointElement {

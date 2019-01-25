@@ -4,8 +4,6 @@
 #include "CheckpointInterface.hpp"
 
 class FTICheckpoint: public CheckpointInterface {
-    std::atomic<char> _checkpoint_level;
-
     public:
     FTICheckpoint(int rank, MPI_Comm comm);
     ~FTICheckpoint();
