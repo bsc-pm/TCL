@@ -19,7 +19,7 @@ Nowadays, TCL implements three different backends: [*FTI (Fault Tolerant Interfa
                 $ cd TCL 
                 $ autoreconf -fiv
                 <<<autoreconf output>>>
-3. Run `configure`. Check the configure flags with 
+3. Run `configure`. Check the configure flags with  
         $ ./configure --help
     to enable more or less backends in the library. Remember that at least 
     one backend is necessary, as well as MPI. Set the environment variable 
