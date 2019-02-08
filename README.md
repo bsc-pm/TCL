@@ -1,0 +1,1 @@
+TCL (Transparent Checkpoint Library) is a tool that provide a generic interface for several different Checkpoint/Restart state of the art libraries. It is mainly used, along with Mercurium compiler, to support pragma checkpointing.
