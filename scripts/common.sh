@@ -12,6 +12,7 @@ generate_register_full_prototype() {
 	/bin/echo 'void tcl_register_cpinfo'${dimensions}'('
 	
 	/bin/echo '	void *base_address,'
+	/bin/echo '	basic_data_t data_type,'
 	/bin/echo '	/* First is the continuous dimension in bytes, the rest are based on the previous dimension */'
 	/bin/echo '	/* dimXstart is the first index/byte and dimXend is the next byte/index outside of the region */'
 	for currentdimension in $(seq 1 ${dimensions}) ; do
@@ -39,6 +40,7 @@ generate_register_named_prototype() {
     /bin/echo "void ${name}("
 
     /bin/echo "${indentation}   void *base_address,"
+    /bin/echo "${indentation}   basic_data_t data_type,"
     /bin/echo "${indentation}   /* First is the continuous dimension in bytes, the rest are based on the previous dimension */"
     /bin/echo "${indentation}   /* dimXstart is the first index/byte and dimXend is the next byte/index outside of the region */"
     for currentdimension in $(seq 1 ${dimensions}) ; do

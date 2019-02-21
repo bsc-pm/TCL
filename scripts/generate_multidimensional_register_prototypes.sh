@@ -47,6 +47,21 @@ echo "enum {"
 echo "      __tcl_max_dimensions = 8"
 echo "};"
 echo
+echo "typedef enum {"
+echo "      TCL_UNKNOWN = 0,"
+echo "      TCL_CHAR,"
+echo "      TCL_SCHAR,"
+echo "      TCL_SHORT,"
+echo "      TCL_INT,"
+echo "      TCL_LONG,"
+echo "      TCL_UCHAR,"
+echo "      TCL_USHORT,"
+echo "      TCL_UINT,"
+echo "      TCL_ULONG,"
+echo "      TCL_FLOAT,"
+echo "      TCL_DOUBLE,"
+echo "      TCL_LDOUBLE,"
+echo "} basic_data_t;"
 echo
 
 
