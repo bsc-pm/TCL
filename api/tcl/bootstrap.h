@@ -18,8 +18,8 @@ extern "C" {
 #endif
 
 typedef enum {
-    TCL_CHECKPOINT_FULL = 0,
-    TCL_CHECKPOINT_DIFF = 1,
+    CHK_FULL = 0,
+    CHK_DIFF = 1,
     // 2, 4, 8, ...
 } tcl_checkpoint_kind_t;
 
