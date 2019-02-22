@@ -37,6 +37,7 @@ for dimensions in $(seq 1 ${maxdimensions}) ; do
 	echo "	${registration_function}("
 	
 	echo "		base_address,"
+	echo "		data_type,"
 	
 	for level in $(seq ${dimensions} -1 1) ; do
 		if [ "${level}" -ne 1 ] ; then

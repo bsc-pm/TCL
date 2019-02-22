@@ -39,14 +39,17 @@ void FTICheckpoint::store(CheckpointInfo * checkpointInfo) {
     std::vector<CheckpointElement> elements = checkpointInfo->getElements();
     for(unsigned int i = 0; i < checkpointInfo->getNumElements(); i++) {
         size_t copy_size = elements[i].getSize();
+        size_t basic_size = CheckpointElement::sizeofBasicDataType(elements[i].getBasicDataType());
+        assert(copy_size%basic_size == 0);
+        size_t num_basic_elems = copy_size / basic_size;
         void * copy_address = elements[i].getBaseAddress();
         FTIT_type ckptInfo;
         // Initialize the new FTI data type
-        res = FTI_InitType(&ckptInfo, copy_size);
+        res = FTI_InitType(&ckptInfo, basic_size);
         if(res != FTI_SCES)
             (*checkpointInfo->_error_handler)(res);
         // Register copies to be stored by FTI
-        res = FTI_Protect(i, copy_address, 1, ckptInfo); 
+        res = FTI_Protect(i, copy_address, num_basic_elems, ckptInfo); 
         if(res != FTI_SCES)
             (*checkpointInfo->_error_handler)(res);
     }
@@ -75,14 +78,17 @@ void FTICheckpoint::load(CheckpointInfo * checkpointInfo) {
     std::vector<CheckpointElement> elements = checkpointInfo->getElements();
     for(unsigned int i = 0; i < checkpointInfo->getNumElements(); i++) {
         size_t copy_size = elements[i].getSize();
+        size_t basic_size = CheckpointElement::sizeofBasicDataType(elements[i].getBasicDataType());
+        assert(copy_size%basic_size == 0);
+        size_t num_basic_elems = copy_size / basic_size;
         void * copy_address = elements[i].getBaseAddress();
         FTIT_type ckptInfo;
         // Initialize the new FTI data type
-        res = FTI_InitType(&ckptInfo, copy_size);
+        res = FTI_InitType(&ckptInfo, basic_size);
         if(res != FTI_SCES)
             (*checkpointInfo->_error_handler)(res);
         // Register copies to be stored by FTI
-        res = FTI_Protect(i, copy_address, 1, ckptInfo); 
+        res = FTI_Protect(i, copy_address, num_basic_elems, ckptInfo); 
         if(res != FTI_SCES)
             (*checkpointInfo->_error_handler)(res);
     }

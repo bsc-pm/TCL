@@ -97,9 +97,9 @@ void Checkpoint::endStore()
     _operationInProcess = false;
 }
 
-void Checkpoint::registerCPInfoElem(void *baseAddress, size_t size)
+void Checkpoint::registerCPInfoElem(void *baseAddress, cp_basic_data_t data_type, size_t size)
 {
     assert(_operationInProcess);
     _currentCheckpointInfo._numElements++;
-    _currentCheckpointInfo._elements.push_back(CheckpointElement(baseAddress,size));
+    _currentCheckpointInfo._elements.push_back(CheckpointElement(baseAddress, data_type, size));
 }

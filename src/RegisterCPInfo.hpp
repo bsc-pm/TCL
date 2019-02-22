@@ -6,4 +6,4 @@
 
 #include <stddef.h>
 
-void tcl_register_cpinfo(void *start, size_t length);
+void tcl_register_cpinfo(void *start, basic_data_t data_type, size_t length);

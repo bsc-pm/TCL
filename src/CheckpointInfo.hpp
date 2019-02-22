@@ -17,12 +17,30 @@ typedef enum {
     // 2, 4, 8, ...
 } CheckpointKind;
 
+typedef enum {
+      UNKNOWN = 0,
+      CHAR,
+      SCHAR,
+      SHORT,
+      INT,
+      LONG,
+      UCHAR,
+      USHORT,
+      UINT,
+      ULONG,
+      FLOAT,
+      DOUBLE,
+      LDOUBLE,
+} cp_basic_data_t;
+
 struct CheckpointElement {
     void * _baseAddress;
+    cp_basic_data_t _basicDataType;
+    // Total size in BYTES.
     size_t _size;
 
-    CheckpointElement(void * baseAddress, size_t size) 
-        : _baseAddress(baseAddress), _size(size)
+    CheckpointElement(void * baseAddress, cp_basic_data_t dataType, size_t size) 
+        : _baseAddress(baseAddress), _basicDataType(dataType), _size(size)
     {
     }
 
@@ -30,10 +48,50 @@ struct CheckpointElement {
     {
         return _baseAddress;
     }
+    
+    inline cp_basic_data_t getBasicDataType()
+    {
+        return _basicDataType;
+    }
 
     inline size_t getSize()
     {
         return _size;
+    }
+
+    static size_t sizeofBasicDataType(cp_basic_data_t dataType) 
+    {
+        switch(dataType) {
+            default:
+                assert(0 && "Unknown type");
+            case UNKNOWN:
+                return 1;
+            case CHAR:
+                return sizeof(char); 
+            case SCHAR:
+                return sizeof(signed char);
+            case SHORT:
+                return sizeof(short);
+            case INT:
+                return sizeof(int);
+            case LONG:
+                return sizeof(long);
+            case UCHAR:
+                return sizeof(unsigned char);
+            case USHORT:
+                return sizeof(unsigned short);
+            case UINT:
+                return sizeof(unsigned int);
+            case ULONG:
+                return sizeof(unsigned long);
+            case FLOAT:
+                return sizeof(float);
+            case DOUBLE:
+                return sizeof(double);
+            case LDOUBLE:
+                return sizeof(long double);
+        }
+        return 0;
     }
 };
 

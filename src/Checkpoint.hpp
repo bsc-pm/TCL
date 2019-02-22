@@ -22,7 +22,7 @@ public:
     static void endLoad();
     static void beginStore(int level, CheckpointKind kind, size_t id, bool mandatory, void (*error_handler)(int));
     static void endStore();
-    static void registerCPInfoElem(void *baseAddress, size_t size);
+    static void registerCPInfoElem(void *baseAddress, cp_basic_data_t data_type, size_t size);
 };
 
 #endif

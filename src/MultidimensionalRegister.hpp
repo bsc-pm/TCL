@@ -22,22 +22,25 @@
 
 _AI_ void register_cpinfo_base(
 	void *baseAddress,
+    basic_data_t data_type,
 	long currentDimSize, long currentDimStart, long currentDimEnd
 );
 
 /*template<>*/
 _AI_ void register_cpinfo_base(
 	void *baseAddress,
+    basic_data_t data_type,
 	_UU_ long currentDimSize, long currentDimStart, long currentDimEnd
 ) {
 	size_t start = (size_t) baseAddress;
 	start += currentDimStart;
-	tcl_register_cpinfo((void *) start, currentDimEnd - currentDimStart);
+	tcl_register_cpinfo((void *) start, data_type, currentDimEnd - currentDimStart);
 }
 
 template <typename... TS>
 static _AI_ void register_cpinfo_skip_next(
 	void *baseAddress,
+    basic_data_t data_type,
 	long currentDimSize, long currentDimStart, long currentDimEnd,
 	long nextDimSize, long nextDimStart, long nextDimEnd,
 	TS... otherDimensions
@@ -46,19 +49,21 @@ static _AI_ void register_cpinfo_skip_next(
 
 static _AI_ void register_cpinfo(
 	void *baseAddress,
+    basic_data_t data_type,
 	long currentDimSize, long currentDimStart, long currentDimEnd
 ) {
-	register_cpinfo_base(baseAddress, currentDimSize, currentDimStart, currentDimEnd);
+	register_cpinfo_base(baseAddress, data_type, currentDimSize, currentDimStart, currentDimEnd);
 }
 
 template <typename... TS>
 static _AI_ void register_cpinfo(
 	void *baseAddress,
+    basic_data_t data_type,
 	long currentDimSize, long currentDimStart, long currentDimEnd,
 	TS... otherDimensions
 ) {
 	if (currentDimensionIsContinuous(otherDimensions...)) {
-		register_cpinfo_skip_next(baseAddress,
+		register_cpinfo_skip_next(baseAddress, data_type,
 			currentDimSize * getCurrentDimensionSize(otherDimensions...),
 			currentDimStart * getCurrentDimensionSize(otherDimensions...),
 			currentDimEnd * getCurrentDimensionSize(otherDimensions...),
@@ -70,7 +75,7 @@ static _AI_ void register_cpinfo(
 		currentBaseAddress += currentDimStart * stride;
 		
 		for (long index = currentDimStart; index < currentDimEnd; index++) {
-			register_cpinfo(currentBaseAddress, otherDimensions...);
+			register_cpinfo(currentBaseAddress, data_type, otherDimensions...);
 			currentBaseAddress += stride;
 		}
 	}
@@ -80,11 +85,12 @@ static _AI_ void register_cpinfo(
 template <typename... TS>
 static _AI_ void register_cpinfo_skip_next(
 	void *baseAddress,
+    basic_data_t data_type,
 	long currentDimSize, long currentDimStart, long currentDimEnd,
 	_UU_ long nextDimSize, _UU_ long nextDimStart, _UU_ long nextDimEnd,
 	TS... otherDimensions
 ) {
-	register_cpinfo(baseAddress, currentDimSize, currentDimStart, currentDimEnd, otherDimensions...);
+	register_cpinfo(baseAddress, data_type, currentDimSize, currentDimStart, currentDimEnd, otherDimensions...);
 }
 
 #undef _AI_

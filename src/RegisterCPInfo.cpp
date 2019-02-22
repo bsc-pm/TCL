@@ -4,10 +4,11 @@
 	Copyright (C) 2018-2019 Barcelona Supercomputing Center (BSC)
 */
 
+#include <tcl.h>
 #include "RegisterCPInfo.hpp"
 #include "Checkpoint.hpp"
 
-void tcl_register_cpinfo(void *start, size_t length)
+void tcl_register_cpinfo(void *start, basic_data_t data_type, size_t length)
 {
-    Checkpoint::registerCPInfoElem(start, length);
+    Checkpoint::registerCPInfoElem(start, (cp_basic_data_t) data_type, length);
 }
