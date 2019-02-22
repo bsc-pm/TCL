@@ -37,7 +37,7 @@ SCRCheckpoint::SCRCheckpoint(int rank)
 
     // From the path of executable file, get just the name.
     std::string aux(path_proc, pos); 
-    _name_proc.append(aux.substr(aux.find_last_of('/')));
+    _name_proc.append(aux.substr(aux.find_last_of('/')+1));
 
 
     char name[256];
@@ -45,37 +45,13 @@ SCRCheckpoint::SCRCheckpoint(int rank)
     /* get backup file path */
     char path[SCR_MAX_FILENAME];
     int found_cp = 0;
-    int status = 0;
-    if (SCR_Route_file(name, path) == SCR_SUCCESS) {
-        int fd = open (path, O_RDWR | O_CREAT, S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IWGRP | S_IWOTH);
-        if(fd < 0) 
-            perror("ERROR: ");
-        assert(fd >= 0 && "Cannot open checkpoint");
-
-        int num_read = read(fd, &_initialId, sizeof(unsigned long));
-        assert(close(fd) == 0 && "Error closing checkpoint file.");
-
-        if(num_read != sizeof(unsigned long))
-            status = -1;
-        else
-            found_cp = 1;
+    res = SCR_Have_restart(&found_cp, path);
+    if(res != SCR_SUCCESS) {
+        assert(0 && "SCR failed when checking for available restarts.");
     }
-
-    /* determine whether all tasks successfully read their checkpoint file */
-    int all_found_checkpoint = 0;
-    MPI_Allreduce(&found_cp, &all_found_checkpoint, 1, MPI_INT, MPI_LAND, MPI_COMM_WORLD);
-    if(!all_found_checkpoint)
-        status = -2;
-
-    /* check that everyone is at the same timestep */
-    int sendval = _initialId;
-    int timestep_and, timestep_or;
-    MPI_Allreduce(&sendval, &timestep_and, 1, MPI_INT, MPI_BAND, MPI_COMM_WORLD);
-    MPI_Allreduce(&sendval, &timestep_or, 1, MPI_INT, MPI_BOR, MPI_COMM_WORLD);
-    if(timestep_and != timestep_or)
-        status = -3;
-    if(status == 0)
-        _restore = true;
+    else {
+        _restore = found_cp;
+    }
 }
 
 SCRCheckpoint::~SCRCheckpoint() {
@@ -103,7 +79,8 @@ void SCRCheckpoint::store(CheckpointInfo * checkpointInfo) {
             (*checkpointInfo->_error_handler)(res);
         // Get backup file path
         char name[256];
-        sprintf(name, "%s-%d.ckpt", _name_proc.c_str(), _rank);
+        const char * scr_prefix = std::getenv("SCR_PREFIX");
+        sprintf(name, "%s/%s-%d.ckpt", scr_prefix, _name_proc.c_str(), _rank);
         char path[SCR_MAX_FILENAME];
         unsigned int cp_size_prov = 0;
         if(SCR_Route_file(name, path)==SCR_SUCCESS){
@@ -141,11 +118,12 @@ void SCRCheckpoint::load(CheckpointInfo * checkpointInfo) {
 
     char name[256];
     sprintf(name, "%s-%d.ckpt", _name_proc.c_str(), _rank);
-    /* get backup file path */
-    char path[SCR_MAX_FILENAME];
-    int found_cp = 0;
-    int status = 0;
-    void * tmp = NULL;
+    char cp_name[SCR_MAX_FILENAME];
+
+    if(SCR_Start_restart(cp_name) != SCR_SUCCESS) {
+        assert(0 && "SCR failed starting a restart.");
+    }
+
     size_t copies_size = sizeof(unsigned long);
     std::vector<CheckpointElement> elements = checkpointInfo->getElements();
     for(unsigned int i = 0; i < checkpointInfo->getNumElements(); i++) {
@@ -153,26 +131,38 @@ void SCRCheckpoint::load(CheckpointInfo * checkpointInfo) {
         copies_size += copy_size;
     }
 
+    char path[SCR_MAX_FILENAME];
+    int found_cp = 0;
+    int status = 0;
+    void * tmp = NULL;
+
     if(SCR_Route_file(name, path) == SCR_SUCCESS) {
         int fd = open(path, O_RDWR | O_CREAT, S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IWGRP | S_IWOTH);
         if(fd < 0) 
-            perror( "ERROR: " );
-        assert(fd >= 0 && "Cannot open checkpoint."); 
+            status = -1;
 
         tmp = (void *) mmap(NULL, copies_size, PROT_WRITE|PROT_READ, MAP_SHARED, fd, 0);
-        assert(close(fd) == 0 && "Error closing checkpoint file.");
+        if(close(fd) != 0)
+            status = -2;
 
         if(tmp == MAP_FAILED)
-            status = -1;
+            status = -3;
         else
             found_cp = 1;
+    }
+    else {
+        status = -4;
+    }
+
+    if(SCR_Complete_restart(found_cp) != SCR_SUCCESS) {
+        status = -5;
     }
 
     /* determine whether all tasks successfully read their checkpoint file */
     int all_found_checkpoint = 0;
     MPI_Allreduce(&found_cp, &all_found_checkpoint, 1, MPI_INT, MPI_LAND, MPI_COMM_WORLD);
     if(!all_found_checkpoint)
-        status = -2;
+        status = -6;
 
     if(status == 0) {
         //! Ignore checkpoint id.
