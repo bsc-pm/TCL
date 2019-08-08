@@ -126,9 +126,13 @@ AS_IF([test $mpi = yes],[
   # MPICH_IGNORE_CXX_SEEK and MPICH_SKIP_MPICXX are used to avoid
   # errors when mpi.h is included after stdio.h when compiling C++ code
   # It only applies, however, to mpich implementations
+  # OMPI_SKIP_MPICXX is used to avoid
+  # errors when mpi.h is included after stdio.h when compiling C++ code
+  # It only applies, however, to openmpi implementations
   # Some exceptions:
   #  - Dont unset CPPFLAGS, CXXFLAGS and LDFLAGS. Respect additional user provided flags
   AX_VAR_PUSHVALUE([CPPFLAGS],[$CPPFLAGS $mpiinc -DMPICH_IGNORE_CXX_SEEK -DMPICH_SKIP_MPICXX])
+  AX_VAR_PUSHVALUE([CPPFLAGS],[$CPPFLAGS $mpiinc -DOMPI_SKIP_MPICXX])
   AX_VAR_PUSHVALUE([CXXFLAGS])
   AX_VAR_PUSHVALUE([LDFLAGS],[$LDFLAGS $mpilib])
   AX_VAR_PUSHVALUE([LIBS])
