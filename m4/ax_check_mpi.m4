@@ -131,11 +131,12 @@ AS_IF([test $mpi = yes],[
   # It only applies, however, to openmpi implementations
   # Some exceptions:
   #  - Dont unset CPPFLAGS, CXXFLAGS and LDFLAGS. Respect additional user provided flags
-  AX_VAR_PUSHVALUE([CPPFLAGS],[$CPPFLAGS $mpiinc -DMPICH_IGNORE_CXX_SEEK -DMPICH_SKIP_MPICXX])
-  AX_VAR_PUSHVALUE([CPPFLAGS],[$CPPFLAGS $mpiinc -DOMPI_SKIP_MPICXX])
-  AX_VAR_PUSHVALUE([CXXFLAGS])
   AX_VAR_PUSHVALUE([LDFLAGS],[$LDFLAGS $mpilib])
   AX_VAR_PUSHVALUE([LIBS])
+
+  mpiinc="$mpiinc -DOMPI_SKIP_MPICXX"
+  mpiinc="$mpiinc -DMPICH_IGNORE_CXX_SEEK -DMPICH_SKIP_MPICXX"
+  AX_VAR_PUSHVALUE([CPPFLAGS],[$CPPFLAGS $mpiinc])
 
   # For cached values and tools, it implies unsetting the variable itself,
   # or it will skip their corresponding checks.
@@ -305,9 +306,8 @@ Maximun multithread level supported: $ac_cv_mpi_mt
 
   # Restore variables to its original state
   AX_VAR_POPVALUE([CPPFLAGS])
-  AX_VAR_POPVALUE([CXXFLAGS])
-  AX_VAR_POPVALUE([LDFLAGS])
   AX_VAR_POPVALUE([LIBS])
+  AX_VAR_POPVALUE([LDFLAGS])
 
   AX_VAR_POPVALUE([CXXCPP])
   AX_VAR_POPVALUE([CXX])
