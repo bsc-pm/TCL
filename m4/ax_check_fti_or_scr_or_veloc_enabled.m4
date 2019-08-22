@@ -39,7 +39,7 @@
 
 AC_DEFUN([AX_CHECK_FTI_OR_SCR_OR_VELOC_ENABLED],
 [
-  AS_IF([test x$fti != xyes && test x$scr != xyes && testx$veloc != xyes ], [
+  AS_IF([test x$fti != xyes && test x$scr != xyes && test x$veloc != xyes ], [
     AC_MSG_FAILURE([
 ------------------------------
 Either FTI or SCR or VELOC is required.
